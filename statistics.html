@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thống kê - IoT Platform</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+  
+</head>
+<body>
+  <div class="navbar-left">
+    <a href="index.html">Trang chủ</a>
+    <a href="datapost.html">Data Post</a>
+    <a href="history.html">Lịch sử</a>
+    <a href="statistics.html">Statistics</a>
+    <a href="profile.html">Profile</a>
+  </div>
+
+  <div class="content">
+    <h2>Thống kê dữ liệu</h2>
+    <div class="search-container">
+      <form id="searchForm">
+        <div class="form-row align-items-end">
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm">
+          </div>
+          <div class="col-md-3">
+            <select class="form-control" id="searchCriteria">
+              <option value="id">ID Thiết bị</option>
+              <option value="temperature">Nhiệt độ (°C)</option>
+              <option value="humidity">Độ ẩm (%)</option>
+              <option value="light">Ánh sáng (lux)</option>
+              <option value="timestamp">Thời gian</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-container mt-4">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th onclick="sortTable('id')">ID Thiết bị &#x25B2;&#x25BC;</th>
+            <th onclick="sortTable('temperature')">Nhiệt độ (°C) &#x25B2;&#x25BC;</th>
+            <th onclick="sortTable('humidity')">Độ ẩm (%) &#x25B2;&#x25BC;</th>
+            <th onclick="sortTable('light')">Ánh sáng (lux) &#x25B2;&#x25BC;</th>
+            <th onclick="sortTable('timestamp')">Thời gian &#x25B2;&#x25BC;</th>
+          </tr>
+        </thead>
+        <tbody id="statisticsTableBody"></tbody>
+      </table>
+      <div class="d-flex justify-content-end mt-2">
+        <select class="form-control form-control-sm" id="rowsPerPage" style="width: auto;">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="pagination-container mt-3">
+      <nav>
+        <ul class="pagination justify-content-center" id="pagination">
+
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    let sortColumn = null;
+    let sortAscending = true;
+    let currentPage = 1;
+    let rowsPerPage = 5; 
+
+    const statisticsData = [
+      { id: '10', temperature: 25, humidity: 60, light: 300, timestamp: '2025-02-12T08:00:00' },
+      { id: '20', temperature: 26, humidity: 55, light: 350, timestamp: '2025-02-12T09:00:00' },
+      { id: '10', temperature: 27, humidity: 50, light: 400, timestamp: '2025-02-12T10:00:00' },
+      { id: '20', temperature: 28, humidity: 52, light: 420, timestamp: '2025-02-12T11:00:00' },
+      { id: '20', temperature: 29, humidity: 58, light: 430, timestamp: '2025-02-12T12:00:00' },
+      { id: '10', temperature: 30, humidity: 53, light: 450, timestamp: '2025-02-12T13:00:00' },
+      { id: '20', temperature: 31, humidity: 59, light: 470, timestamp: '2025-02-12T14:00:00' },
+      { id: '10', temperature: 32, humidity: 60, light: 480, timestamp: '2025-02-12T15:00:00' },
+      { id: '10', temperature: 34, humidity: 64, light: 495, timestamp: '2025-02-12T16:00:00' },
+      { id: '20', temperature: 37, humidity: 65, light: 482, timestamp: '2025-02-12T17:00:00' }
+    ];
+
+    let filteredData = [...statisticsData];
+
+    function sortTable(column) {
+      if (sortColumn === column) {
+        sortAscending = !sortAscending; 
+      } else {
+        sortColumn = column;
+        sortAscending = true; 
+      }
+
+      filteredData.sort((a, b) => {
+        if (a[column] < b[column]) return sortAscending ? -1 : 1;
+        if (a[column] > b[column]) return sortAscending ? 1 : -1;
+        return 0;
+      });
+
+      displayStatistics();
+    }
+
+    function displayStatistics() {
+      const tableBody = document.getElementById('statisticsTableBody');
+      tableBody.innerHTML = '';
+
+      const start = (currentPage - 1) * rowsPerPage;
+      const paginatedData = filteredData.slice(start, start + rowsPerPage);
+
+      paginatedData.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.temperature}</td>
+          <td>${item.humidity}</td>
+          <td>${item.light}</td>
+          <td>${new Date(item.timestamp).toLocaleString('vi-VN')}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      displayPagination();
+    }
+
+    function displayPagination() {
+      const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+      const paginationDiv = document.getElementById('pagination');
+      paginationDiv.innerHTML = '';
+
+      for (let i = 1; i <= totalPages; i++) {
+        const pageItem = document.createElement('li');
+        pageItem.classList.add('page-item');
+        if (i === currentPage) {
+          pageItem.classList.add('active');
+        }
+
+        const pageLink = document.createElement('a');
+        pageLink.classList.add('page-link');
+        pageLink.href = '#';
+        pageLink.textContent = i;
+
+        pageLink.addEventListener('click', (event) => {
+          event.preventDefault();
+          currentPage = i;
+          displayStatistics();
+        });
+
+        pageItem.appendChild(pageLink);
+        paginationDiv.appendChild(pageItem);
+      }
+    }
+
+    function updateRowsPerPage() {
+      rowsPerPage = parseInt(document.getElementById('rowsPerPage').value, 10);
+      currentPage = 1; 
+      displayStatistics();
+    }
+
+    function filterStatistics() {
+      const searchInput = document.getElementById('searchInput').value.trim();
+      const searchCriteria = document.getElementById('searchCriteria').value;
+
+      filteredData = statisticsData.filter(item => {
+        if (searchCriteria === 'timestamp') {
+          const datePattern = /^(\d{2}):(\d{2}):(\d{2}) (\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+          const match = searchInput.match(datePattern);
+          if (!match) return false;
+
+          const [_, hh, mm, ss, day, month, year] = match.map(Number);
+          const inputDate = new Date(year, month - 1, day, hh, mm, ss).getTime();
+          return new Date(item.timestamp).getTime() === inputDate;
+        } else {
+          return item[searchCriteria].toString().toLowerCase().includes(searchInput.toLowerCase());
+        }
+      });
+
+      currentPage = 1;
+      displayStatistics();
+    }
+
+    document.getElementById('searchForm').addEventListener('submit', event => {
+      event.preventDefault();
+      filterStatistics();
+    });
+
+    document.getElementById('rowsPerPage').addEventListener('change', () => {
+      updateRowsPerPage();
+    });
+
+    displayStatistics();
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Platform - Data Post</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="navbar-left">
+    <a href="index.html">Trang chủ</a>
+    <a href="datapost.html">Data Post</a>
+    <a href="history.html">Lịch sử</a>
+    <a href="statistics.html">Statistics</a>
+    <a href="profile.html">Profile</a>
+  </div>
+
+  <div class="content">
+    <h2>Datapost - IoT Platform</h2>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="stat-box humidity-box">
+          <h4>Độ ẩm</h4>
+          <p id="humidity">50%</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-box temperature-box">
+          <h4>Nhiệt độ</h4>
+          <p id="temperature">25°C</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-box light-box">
+          <h4>Ánh sáng</h4>
+          <p id="light">300 lux</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-switch-container">
+      <div class="chart-container">
+        <h3>Biểu đồ các thông số theo thời gian</h3>
+        <canvas id="sensorChart"></canvas>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="stat-box switch-box text-center">
+            <h4>Quạt</h4>
+            <label class="switch">
+              <input type="checkbox" id="fanSwitch">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      
+        <div class="col-md-6">
+          <div class="stat-box switch-box text-center">
+            <h4>Đèn</h4>
+            <label class="switch">
+              <input type="checkbox" id="acSwitch">
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+
+    var ctx = document.getElementById('sensorChart').getContext('2d');
+    var sensorChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['00:00', '01:00', '02:00', '03:00'], 
+        datasets: [{
+          label: 'Độ ẩm (%)',
+          data: [50, 55, 60, 80],
+          borderColor: 'rgb(76, 175, 80)',
+          fill: false
+        }, {
+          label: 'Nhiệt độ (°C)',
+          data: [25, 22, 27, 28],
+          borderColor: 'rgb(255, 99, 132)',
+          fill: false
+        }, {
+          label: 'Ánh sáng (lux)',
+          data: [300, 350, 400, 400],
+          borderColor: 'rgb(52, 152, 219)', 
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Thời gian'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Giá trị'
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
